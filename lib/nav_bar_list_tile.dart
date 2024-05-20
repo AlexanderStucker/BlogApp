@@ -5,7 +5,7 @@ class NavListTile extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
 
-  const NavListTile({
+  const NavListTile({super.key, 
     required this.icon,
     required this.title,
     required this.onTap,
