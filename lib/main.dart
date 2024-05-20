@@ -36,6 +36,7 @@ class MyHomePageState extends State<MyHomePage> {
       // drawer with a Navbar
       drawer: NavBar(),
       appBar: AppBar(
+        //IconTheme is for the Size of the BurgerButton
         iconTheme: const IconThemeData(
           size: 50,
         ),
