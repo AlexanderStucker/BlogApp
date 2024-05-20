@@ -1,3 +1,4 @@
+import 'package:blog_app/main.dart';
 import 'package:flutter/material.dart';
 import 'nav_bar_list_tile.dart'; // Import the NavListTile widget
 
@@ -60,12 +61,21 @@ class NavBar extends StatelessWidget {
           NavListTile(
             icon: Icons.home,
             title: "Home",
-            onTap: () => null,
+            onTap: () {
+              //Closing the Sidebar
+              Navigator.pop(context);
+              //Navigation to the Main(home)Page
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => MyHomePage()),
+              );
+            },
           ),
           Divider(),
           NavListTile(
             icon: Icons.add_box_outlined,
             title: "Write new Blog",
+            //Will navigate to a screen not yet implemented
             onTap: () => null,
           ),
           Divider(),
