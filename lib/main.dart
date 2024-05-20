@@ -1,8 +1,8 @@
-import 'package:blog_app/search_box.dart';
-import 'package:flutter/material.dart';
 import 'package:blog_app/nav_bar.dart';
-import 'package:blog_app/blog_card.dart';
+import 'package:blog_app/search_box.dart';
 import 'package:blog_app/title_text.dart';
+import 'package:flutter/material.dart';
+import 'blog_card.dart';
 
 void main() {
   runApp(MainApp());
@@ -43,11 +43,12 @@ class MyHomePageState extends State<MyHomePage> {
         title: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
           ClipOval(
             child: Image.network(
-                "https://images.unsplash.com/photo-1545996124-0501ebae84d0?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                height: 40,
-                width: 40,
-                fit: BoxFit.cover),
-          )
+              "https://images.unsplash.com/photo-1545996124-0501ebae84d0?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              height: 40,
+              width: 40,
+              fit: BoxFit.cover,
+            ),
+          ),
         ]),
       ),
       body: Column(
@@ -72,7 +73,9 @@ class MyHomePageState extends State<MyHomePage> {
         "image": "https://via.placeholder.com/150",
         "author": "Alexander Stucker",
         "title": "My First Blog",
-        "date": "20.05.2024"
+        "date": "20.05.2024",
+        "text":
+            "This is my First Blog and blabalbalalbalbalblablablablablablablalbal"
       },
       {
         "image": "https://via.placeholder.com/150",
@@ -115,6 +118,8 @@ class MyHomePageState extends State<MyHomePage> {
           author: blogs[index]["author"]!,
           title: blogs[index]["title"]!,
           date: blogs[index]["date"]!,
+          text: blogs[index]["text"] ??
+              "", // I don't want to add text to all the examples, so here it can be null
         );
       },
     );
