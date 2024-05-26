@@ -27,7 +27,9 @@ class BlogDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.network(imageUrl),
+            Center(
+              child: Image.network(imageUrl),
+            ),
             const SizedBox(height: 8),
             Text(
               title,
