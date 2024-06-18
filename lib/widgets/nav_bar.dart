@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'nav_bar_list_tile.dart';
 
 class NavBar extends StatelessWidget {
+  final VoidCallback onNewBlogCreated;
+
+  const NavBar({super.key, required this.onNewBlogCreated});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Column(
         children: [
-          // Using DrawerHeader for more flexibility in alignment since Avatar can not be aligned in UserAccountsDrawerHeader.
-          // This might cause issues on different screen sizes due to fixed height and content arrangement.
           DrawerHeader(
             decoration: const BoxDecoration(
               color: Colors.blue,
@@ -58,42 +60,42 @@ class NavBar extends StatelessWidget {
               ),
             ),
           ),
-          // Navigation Tiles its  own Class-File
           NavListTile(
             icon: Icons.home,
             title: "Home",
             onTap: () {
-              //Closing the Sidebar
               Navigator.pop(context);
-              //Navigation to the Main(home)Page
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
               );
             },
           ),
-          Divider(),
+          const Divider(),
           NavListTile(
-              icon: Icons.add_box_outlined,
-              title: "Write new Blog",
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CreateBlogScreen(),
+            icon: Icons.add_box_outlined,
+            title: "Write new Blog",
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateBlogScreen(
+                    onBlogCreated: onNewBlogCreated,
                   ),
-                );
-              }),
-          Divider(),
+                ),
+              );
+            },
+          ),
+          const Divider(),
           Expanded(
             child: Container(),
           ),
-          Divider(),
+          const Divider(),
           NavListTile(
             icon: Icons.logout,
             title: "Logout",
-            onTap: () => null,
+            onTap: () {},
           ),
         ],
       ),

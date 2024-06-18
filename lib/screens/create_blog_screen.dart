@@ -1,15 +1,18 @@
-import 'package:blog_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/blog_post.dart';
+import '../services/blog_repository.dart';
 
 class CreateBlogScreen extends StatefulWidget {
+  final VoidCallback onBlogCreated;
+
+  const CreateBlogScreen({super.key, required this.onBlogCreated});
+
   @override
   _CreateBlogScreenState createState() => _CreateBlogScreenState();
 }
 
 class _CreateBlogScreenState extends State<CreateBlogScreen> {
-  String _imageUrl = '';
   String _title = '';
   String _author = '';
   String _text = '';
@@ -18,9 +21,9 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Write New Blog"),
+        title: const Text("Write New Blog"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -31,15 +34,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
         child: Column(
           children: [
             TextField(
-              decoration: InputDecoration(labelText: 'Image URL'),
-              onChanged: (value) {
-                setState(() {
-                  _imageUrl = value;
-                });
-              },
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Title'),
+              decoration: const InputDecoration(labelText: 'Title'),
               onChanged: (value) {
                 setState(() {
                   _title = value;
@@ -47,7 +42,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
               },
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Author'),
+              decoration: const InputDecoration(labelText: 'Author'),
               onChanged: (value) {
                 setState(() {
                   _author = value;
@@ -55,7 +50,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
               },
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Text'),
+              decoration: const InputDecoration(labelText: 'Text'),
               maxLines: 10,
               onChanged: (value) {
                 setState(() {
@@ -63,23 +58,29 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                // Immer das heutige Datum speichern
                 final String date =
                     DateFormat('dd.MM.yyyy').format(DateTime.now());
-
                 final newBlogPost = BlogPost(
-                  imageUrl: _imageUrl,
+                // Im moment immer das Placeholder Image verwenden
+                  imageUrl: 'https://via.placeholder.com/150',
                   title: _title,
                   author: _author,
                   date: date,
                   text: _text,
                 );
 
-                MaterialPageRoute(builder: (context) => HomeScreen());
+                // Neuen Eintrag hinzufügen
+                BlogRepository().addBlogPost(newBlogPost);
+                //Die Liste wird neu geladen -> HomeScreen
+                widget.onBlogCreated();
+                // Kehrt zur vorherigen seite zurück
+                Navigator.pop(context);
               },
-              child: Text('Create Blog'),
+              child: const Text('Create Blog'),
             ),
           ],
         ),
