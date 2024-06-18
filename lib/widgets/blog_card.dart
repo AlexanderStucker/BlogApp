@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'blog_detail_screen.dart'; 
+import '../screens/blog_detail_screen.dart'; 
 
 class BlogCard extends StatelessWidget {
   final String imageUrl;

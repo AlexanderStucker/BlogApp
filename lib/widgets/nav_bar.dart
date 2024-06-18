@@ -1,4 +1,4 @@
-import 'package:blog_app/main.dart';
+import 'package:blog_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'nav_bar_list_tile.dart'; // Import the NavListTile widget
 
@@ -67,7 +67,7 @@ class NavBar extends StatelessWidget {
               //Navigation to the Main(home)Page
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => MyHomePage()),
+                MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             },
           ),
