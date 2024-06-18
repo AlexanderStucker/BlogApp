@@ -1,3 +1,4 @@
+import 'package:blog_app/services/blog_repository.dart';
 import 'package:blog_app/widgets/nav_bar.dart';
 import 'package:blog_app/widgets/search_box.dart';
 import 'package:blog_app/widgets/title_text.dart';
@@ -13,6 +14,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<List<BlogPost>>? futureBlogs;
+
+  @override
+  void initState() {
+    super.initState();
+    futureBlogs = BlogRepository().getBlogPosts();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,69 +51,34 @@ class _HomeScreenState extends State<HomeScreen> {
             child: searchBox(),
           ),
           Expanded(
-            child: _blogList(),
+            child: FutureBuilder<List<BlogPost>>(
+              future: futureBlogs,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No blogs found'));
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final blog = snapshot.data![index];
+                      return BlogCard(
+                          imageUrl: blog.imageUrl,
+                          author: blog.author,
+                          title: blog.title,
+                          date: blog.date,
+                          text: blog.text ?? "");
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),
-    );
-  }
-
-
-// Sample Data for Blog-Posts. Will be deleted in the future
-  Widget _blogList() {
-    List<BlogPost> blogs = [
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Alexander Stucker",
-        title: "My First Blog",
-        date: "20.05.2024",
-        text:
-            "This is my First Blog and blabalbalalbalbalblablablablablablablablalbal",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 2",
-        title: "Title of Blog 2",
-        date: "20.05.2024",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 3",
-        title: "Title of Blog 3",
-        date: "20.05.2024",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 4",
-        title: "Title of Blog 4",
-        date: "20.05.2024",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 5",
-        title: "Title of Blog 5",
-        date: "20.05.2024",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 6",
-        title: "Title of Blog 6",
-        date: "20.05.2024",
-      ),
-    ];
-
-// Using ListView.builder to get all the scrollable cards
-    return ListView.builder(
-      itemCount: blogs.length,
-      itemBuilder: (context, index) {
-        return BlogCard(
-          imageUrl: blogs[index].imageUrl,
-          author: blogs[index].author,
-          title: blogs[index].title,
-          date: blogs[index].date,
-          text: blogs[index].text ?? "",
-        );
-      },
     );
   }
 }

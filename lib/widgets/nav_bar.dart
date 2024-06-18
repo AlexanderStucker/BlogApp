@@ -1,6 +1,7 @@
+import 'package:blog_app/screens/create_blog_screen.dart';
 import 'package:blog_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'nav_bar_list_tile.dart'; // Import the NavListTile widget
+import 'nav_bar_list_tile.dart';
 
 class NavBar extends StatelessWidget {
   @override
@@ -73,11 +74,17 @@ class NavBar extends StatelessWidget {
           ),
           Divider(),
           NavListTile(
-            icon: Icons.add_box_outlined,
-            title: "Write new Blog",
-            //Will navigate to a screen not yet implemented
-            onTap: () => null,
-          ),
+              icon: Icons.add_box_outlined,
+              title: "Write new Blog",
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateBlogScreen(),
+                  ),
+                );
+              }),
           Divider(),
           Expanded(
             child: Container(),
