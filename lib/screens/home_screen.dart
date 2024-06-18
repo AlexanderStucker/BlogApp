@@ -1,38 +1,59 @@
-import 'package:blog_app/widgets/nav_bar.dart';
-import 'package:blog_app/widgets/search_box.dart';
-import 'package:blog_app/widgets/title_text.dart';
-import 'package:blog_app/widgets/blog_card.dart';
 import 'package:flutter/material.dart';
 import '../models/blog_post.dart';
+import '../services/blog_repository.dart';
+import '../widgets/blog_card.dart';
+import '../widgets/nav_bar.dart';
+import '../widgets/search_box.dart';
+import '../widgets/title_text.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<List<BlogPost>>? futureBlogs;
+
+  //Initialisiere den Screen mit den vorhandenen Blogs im Repository
+  @override
+  void initState() {
+    super.initState();
+    fetchBlogs();
+  }
+
+  // Hohlt die Blogs aus dem Repo
+  void fetchBlogs() {
+    setState(() {
+      futureBlogs = BlogRepository().getBlogPosts();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // drawer with a Navbar
-      drawer: NavBar(),
+      drawer: NavBar(
+        // Wenn neue Blogs erstellt wurden, soll die Liste neu geladen werden
+        onNewBlogCreated: fetchBlogs,
+      ),
       appBar: AppBar(
-        //IconTheme is for the Size of the BurgerButton
         iconTheme: const IconThemeData(
           size: 50,
         ),
-        title: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          ClipOval(
-            child: Image.network(
-              "https://images.unsplash.com/photo-1545996124-0501ebae84d0?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              height: 40,
-              width: 40,
-              fit: BoxFit.cover,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ClipOval(
+              child: Image.network(
+                "https://images.unsplash.com/photo-1545996124-0501ebae84d0?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                height: 40,
+                width: 40,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -42,69 +63,31 @@ class _HomeScreenState extends State<HomeScreen> {
             child: searchBox(),
           ),
           Expanded(
-            child: _blogList(),
+            child: FutureBuilder<List<BlogPost>>(
+              future: futureBlogs,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator()); // Zeigt einen Ladeindikator, solange die Liste geladen wird
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final blog = snapshot.data![index];
+                      return BlogCard(
+                        imageUrl: blog.imageUrl,
+                        author: blog.author,
+                        title: blog.title,
+                        date: blog.date,
+                        text: blog.text ?? "",
+                      );
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),
-    );
-  }
-
-
-// Sample Data for Blog-Posts. Will be deleted in the future
-  Widget _blogList() {
-    List<BlogPost> blogs = [
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Alexander Stucker",
-        title: "My First Blog",
-        date: "20.05.2024",
-        text:
-            "This is my First Blog and blabalbalalbalbalblablablablablablablablalbal",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 2",
-        title: "Title of Blog 2",
-        date: "20.05.2024",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 3",
-        title: "Title of Blog 3",
-        date: "20.05.2024",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 4",
-        title: "Title of Blog 4",
-        date: "20.05.2024",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 5",
-        title: "Title of Blog 5",
-        date: "20.05.2024",
-      ),
-      BlogPost(
-        imageUrl: "https://via.placeholder.com/150",
-        author: "Author 6",
-        title: "Title of Blog 6",
-        date: "20.05.2024",
-      ),
-    ];
-
-// Using ListView.builder to get all the scrollable cards
-    return ListView.builder(
-      itemCount: blogs.length,
-      itemBuilder: (context, index) {
-        return BlogCard(
-          imageUrl: blogs[index].imageUrl,
-          author: blogs[index].author,
-          title: blogs[index].title,
-          date: blogs[index].date,
-          text: blogs[index].text ?? "",
-        );
-      },
     );
   }
 }
