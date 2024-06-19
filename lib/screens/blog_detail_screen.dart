@@ -21,6 +21,21 @@ class BlogDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (String result) {},
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: "Edit Blog",
+                child: Text("Edit Blog"),
+              ),
+              const PopupMenuItem<String>(
+                value: "Delete Blog",
+                child: Text("Delete Blog"),
+              ),
+            ],
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
