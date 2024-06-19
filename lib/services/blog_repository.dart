@@ -40,4 +40,12 @@ class BlogRepository {
   void addBlogPost(BlogPost blogPost) {
     _blogPosts.add(blogPost);
   }
+
+  void updateBlogPost(BlogPost updatedBlogPost) {
+    int index =
+        _blogPosts.indexWhere((post) => post.title == updatedBlogPost.title);
+    if (index != -1) {
+      _blogPosts[index] = updatedBlogPost;
+    }
+  }
 }
