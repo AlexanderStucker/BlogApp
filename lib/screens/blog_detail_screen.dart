@@ -1,3 +1,4 @@
+import 'package:blog_app/screens/edit_blog_screen.dart';
 import 'package:flutter/material.dart';
 
 class BlogDetailScreen extends StatelessWidget {
@@ -23,7 +24,26 @@ class BlogDetailScreen extends StatelessWidget {
         title: Text(title),
         actions: <Widget>[
           PopupMenuButton<String>(
-            onSelected: (String result) {},
+            onSelected: (String result) {
+              switch (result) {
+                case "Edit Blog":
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditBlogScreen(
+                          imageUrl: imageUrl,
+                          title: title,
+                          author: author,
+                          date: date,
+                          text: text),
+                    ),
+                  );
+                  break;
+                case "Delete Blog":
+                  // to be Done
+                  break;
+              }
+            },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: "Edit Blog",
