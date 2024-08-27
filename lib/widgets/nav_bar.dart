@@ -1,5 +1,6 @@
 import 'package:blog_app/screens/create_blog_screen.dart';
 import 'package:blog_app/screens/home_screen.dart';
+import 'package:blog_app/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'nav_bar_list_tile.dart';
 
@@ -66,9 +67,7 @@ class NavBar extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
+                context, '/' as Route<Object?>);
             },
           ),
           const Divider(),
@@ -77,28 +76,28 @@ class NavBar extends StatelessWidget {
             title: "Write new Blog",
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateBlogScreen(
-                    onBlogCreated: onNewBlogCreated,
-                  ),
-                ),
-              );
-            },
-          ),
+              Navigator.pushNamed(
+                 context,
+                '/create',);
+              }
+              ),
           const Divider(),
-          Expanded(
+          Expanded( 
             child: Container(),
           ),
           const Divider(),
           NavListTile(
             icon: Icons.logout,
             title: "Logout",
-            onTap: () {},
+            onTap: () async{
+              await AuthService().signOut();
+              Navigator.of(context).pushNamedAndRemoveUntil('/', (route)=> false);
+            },
           ),
         ],
       ),
     );
   }
 }
+
+
