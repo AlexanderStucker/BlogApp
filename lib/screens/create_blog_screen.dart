@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../models/blog_post.dart';
-import '../services/blog_repository.dart';
 
 class CreateBlogScreen extends StatefulWidget {
   final VoidCallback onBlogCreated;
@@ -12,6 +12,7 @@ class CreateBlogScreen extends StatefulWidget {
   _CreateBlogScreenState createState() => _CreateBlogScreenState();
 }
 
+// Titel, Author und Text müssen gespeichert werden
 class _CreateBlogScreenState extends State<CreateBlogScreen> {
   String _title = '';
   String _author = '';
@@ -42,14 +43,6 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
               },
             ),
             TextField(
-              decoration: const InputDecoration(labelText: 'Author'),
-              onChanged: (value) {
-                setState(() {
-                  _author = value;
-                });
-              },
-            ),
-            TextField(
               decoration: const InputDecoration(labelText: 'Text'),
               maxLines: 10,
               onChanged: (value) {
@@ -60,25 +53,10 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Immer das heutige Datum speichern
-                final String date =
-                    DateFormat('dd.MM.yyyy').format(DateTime.now());
-                final newBlogPost = BlogPost(
-                // Im moment immer das Placeholder Image verwenden
-                  imageUrl: 'https://via.placeholder.com/150',
-                  title: _title,
-                  author: _author,
-                  date: date,
-                  text: _text,
-                );
-
-                // Neuen Eintrag hinzufügen
-                BlogRepository().addBlogPost(newBlogPost);
-                //Die Liste wird neu geladen -> HomeScreen
+              onPressed: () async {
+                await addBlogPost();
                 widget.onBlogCreated();
-                // Kehrt zur vorherigen seite zurück
-                Navigator.pop(context);
+                Navigator.pop(context, true); // Pass true when a blog is created
               },
               child: const Text('Create Blog'),
             ),
@@ -86,5 +64,33 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
         ),
       ),
     );
+  }
+
+// Methode um die Blogs in der Datenbank zu speichern
+  Future<void> addBlogPost() async {
+    final db = FirebaseFirestore.instance.collection('blogPosts');
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      // Schutz, falls der User nicht angemeldet ist
+      return;
+    }
+
+    // Neues Blog-Objekt erstellen 
+    final blog = BlogPost(
+      id: DateTime.now().toString(),
+      author: currentUser.uid,
+      title: _title,
+      text: _text,
+      date: DateTime.now(),
+    );
+
+    // erstellter Blog in Firebase speichern
+    try {
+      await db.doc(blog.id).set(blog.toMap());
+    } on FirebaseException catch (e) {
+      // Handle Firebase exception
+      print("Error adding blog post: ${e.message}");
+    }
   }
 }

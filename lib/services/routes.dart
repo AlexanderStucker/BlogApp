@@ -8,6 +8,6 @@ var appRoutes = {
   '/': (context) => const EntryScreen(),
   '/home': (context) => const HomeScreen(),
   '/login': (context) => const LoginScreen(),
- //'/create': (context) => const CreateBlogScreen(),
+ '/create': (context) => CreateBlogScreen(onBlogCreated: () {  },),
   // '/detail': (context) => const BlogDetailScreen(),
 };

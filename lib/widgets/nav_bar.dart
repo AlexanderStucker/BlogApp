@@ -77,8 +77,7 @@ class NavBar extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(
-                 context,
-                '/create',);
+                 context, '/create',);
               }
               ),
           const Divider(),

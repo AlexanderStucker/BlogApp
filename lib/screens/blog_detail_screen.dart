@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class BlogDetailScreen extends StatelessWidget {
-  final String imageUrl;
   final String title;
   final String author;
   final String date;
@@ -9,7 +8,6 @@ class BlogDetailScreen extends StatelessWidget {
 
   const BlogDetailScreen({
     super.key,
-    required this.imageUrl,
     required this.title,
     required this.author,
     required this.date,
@@ -27,10 +25,6 @@ class BlogDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Center(
-              child: Image.network(imageUrl),
-            ),
-            const SizedBox(height: 8),
             Text(
               title,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),

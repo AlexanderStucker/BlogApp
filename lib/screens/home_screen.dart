@@ -5,6 +5,7 @@ import '../widgets/blog_card.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/search_box.dart';
 import '../widgets/title_text.dart';
+import 'create_blog_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,17 +17,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Future<List<BlogPost>>? futureBlogs;
 
-  //Initialisiere den Screen mit den vorhandenen Blogs im Repository
   @override
   void initState() {
     super.initState();
-    fetchBlogs();
+    fetchBlogs();  // Blogs werden beim Starten des Bildschirms geladen.
   }
 
   // Hohlt die Blogs aus dem Repo
-  void fetchBlogs() {
+  Future<void> fetchBlogs() async {
     setState(() {
-      futureBlogs = BlogRepository().getBlogPosts();
+      futureBlogs = BlogRepository().getBlogPosts();  // BlogPosts werden aus dem Repository abgerufen.
     });
   }
 
@@ -34,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: NavBar(
-        // Wenn neue Blogs erstellt wurden, soll die Liste neu geladen werden
         onNewBlogCreated: fetchBlogs,
       ),
       appBar: AppBar(
@@ -50,6 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 40,
                 width: 40,
                 fit: BoxFit.cover,
+                // Fehlerbehandlung beim Laden des Bildes.
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return CircularProgressIndicator();
+                },
               ),
             ),
           ],
@@ -60,30 +65,42 @@ class _HomeScreenState extends State<HomeScreen> {
           TitleText(title: "Blog List"),
           const Padding(
             padding: EdgeInsets.only(bottom: 10),
-            child: searchBox(),
+            child: searchBox(),  // Suchfeld zur Filterung der Blogs.
           ),
           Expanded(
-            child: FutureBuilder<List<BlogPost>>(
-              future: futureBlogs,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator()); // Zeigt einen Ladeindikator, solange die Liste geladen wird
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final blog = snapshot.data![index];
-                      return BlogCard(
-                        imageUrl: blog.imageUrl,
-                        author: blog.author,
-                        title: blog.title,
-                        date: blog.date,
-                        text: blog.text ?? "",
-                      );
-                    },
-                  );
-                }
-              },
+            child: RefreshIndicator(
+              onRefresh: fetchBlogs,  // Damit die Liste aktuallisiert werden kann
+              child: FutureBuilder<List<BlogPost>>(
+                future: futureBlogs,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text('No blogs found'),
+                    );
+                  } else {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final blog = snapshot.data![index];
+                        return BlogCard(
+                          author: blog.author,
+                          title: blog.title,
+                          date: blog.date,
+                          text: blog.text,
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ),
           ),
         ],
