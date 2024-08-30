@@ -1,16 +1,41 @@
+import 'package:blog_app/services/routes.dart';
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   runApp(MainApp());
 }
 
-// Root of the App. Needs to be a Stateless Widget
-class MainApp extends StatelessWidget {
-  @override
+
+class MainApp extends StatefulWidget{
+ const MainApp({super.key});
+
+ @override
+State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
+    @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
+    return FutureBuilder(
+      future: _initialization,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('error');
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            initialRoute: '/',
+            routes: appRoutes,
+          );
+        }
+
+        return Text('loading');
+
+      },
     );
   }
 }

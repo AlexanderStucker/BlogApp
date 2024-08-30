@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import '../screens/blog_detail_screen.dart'; 
+import '../screens/blog_detail_screen.dart';
+import 'package:intl/intl.dart';
 
 class BlogCard extends StatelessWidget {
-  final String imageUrl;
+  final String id;
   final String author;
   final String title;
-  final String date;
+  final DateTime date;
   final String text;
 
   const BlogCard({
     super.key,
-    required this.imageUrl,
+    required this.id,
     required this.author,
     required this.title,
     required this.date,
@@ -19,49 +20,63 @@ class BlogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Format the date to a readable string
+    String formattedDate = DateFormat('dd.MM.yyyy').format(date);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => BlogDetailScreen(
-              imageUrl: imageUrl,
+              id: id,
               title: title,
               author: author,
-              date: date,
+              date: formattedDate,
               text: text,
             ),
           ),
         );
       },
       child: Card(
-        child: Row(
-          children: <Widget>[
-            Image.network(
-              imageUrl,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        elevation: 5,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                author,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  ListTile(
-                    title: Text(title),
-                    subtitle: Text(author),
+                  Text(
+                    formattedDate,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Text(date),
-                      const SizedBox(width: 8),
-                    ],
-                  ),
+                  const SizedBox(width: 8),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

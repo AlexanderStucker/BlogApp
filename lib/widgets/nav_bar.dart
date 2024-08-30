@@ -1,12 +1,38 @@
-import 'package:blog_app/screens/create_blog_screen.dart';
-import 'package:blog_app/screens/home_screen.dart';
+import 'package:blog_app/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'nav_bar_list_tile.dart';
 
-class NavBar extends StatelessWidget {
+class NavBar extends StatefulWidget {
   final VoidCallback onNewBlogCreated;
 
   const NavBar({super.key, required this.onNewBlogCreated});
+
+  @override
+  _NavBarState createState() => _NavBarState();
+}
+
+class _NavBarState extends State<NavBar> {
+  String _authorName = 'Author Name';
+  String _email = 'Email';
+
+  // Benutzerdaten laden
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo(); 
+  }
+
+  Future<void> _loadUserInfo() async {
+    final user = AuthService().getCurrentUser();
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      setState(() {
+        _authorName = userDoc['authorName']; 
+        _email = user.email?? 'No Email detected' ;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +68,31 @@ class NavBar extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    "AccountName",
-                    style: TextStyle(
-                      color: Colors.black,
+                  Text(
+                    _authorName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                                offset: Offset(0, 0),
+                                blurRadius: 10.0,
+                                color: Colors.black,
+                        )
+                      ],
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text(
-                    "AccountEmail",
-                    style: TextStyle(
-                      color: Colors.black,
+                  Text(
+                    _email,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                                offset: Offset(0, 0),
+                                blurRadius: 10.0,
+                                color: Colors.black,
+                        )
+                      ],
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -66,25 +106,24 @@ class NavBar extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
+                context, '/' as Route<Object?>);
             },
           ),
           const Divider(),
           NavListTile(
             icon: Icons.add_box_outlined,
             title: "Write new Blog",
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateBlogScreen(
-                    onBlogCreated: onNewBlogCreated,
-                  ),
-                ),
-              );
+              // Prüfen ob der User als Guest eingeloggt ist
+              if (_isGuestUser()) {
+                _showGuestAlert(context);
+              } else {
+                final result = await Navigator.pushNamed(context, '/create');
+                if (result == true) {
+                  widget.onNewBlogCreated();
+                }
+              }
             },
           ),
           const Divider(),
@@ -95,10 +134,40 @@ class NavBar extends StatelessWidget {
           NavListTile(
             icon: Icons.logout,
             title: "Logout",
-            onTap: () {},
+            onTap: () async {
+              await AuthService().signOut();
+              Navigator.of(context).pushNamedAndRemoveUntil('/', (route)=> false);
+            },
           ),
         ],
       ),
+    );
+  }
+
+
+//Guest Logic
+  bool _isGuestUser() {
+    final currentUser = AuthService().getCurrentUser();
+    return currentUser != null && currentUser.isAnonymous;
+  }
+
+  void _showGuestAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Guest'),
+          content: const Text('Guests can not create a Blog. Please create a account with your e-mail'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

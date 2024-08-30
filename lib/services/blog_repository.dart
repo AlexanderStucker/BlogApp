@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/blog_post.dart';
 
 class BlogRepository {
@@ -9,35 +10,36 @@ class BlogRepository {
 
   BlogRepository._internal();
 
-  final List<BlogPost> _blogPosts = [
-    BlogPost(
-      imageUrl: "https://via.placeholder.com/150",
-      author: "Alexander Stucker",
-      title: "My First Blog",
-      date: "20.05.2024",
-      text:
-          "This is my First Blog and blabalbalalbalbalblablablablablablablablalbal",
-    ),
-    BlogPost(
-      imageUrl: "https://via.placeholder.com/150",
-      author: "Author 2",
-      title: "Title of Blog 2",
-      date: "20.05.2024",
-    ),
-    BlogPost(
-      imageUrl: "https://via.placeholder.com/150",
-      author: "Author 3",
-      title: "Title of Blog 3",
-      date: "20.05.2024",
-    ),
-  ];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Methode zum Abruf der Blogs in FireStore
   Future<List<BlogPost>> getBlogPosts() async {
-    await Future.delayed(const Duration(seconds: 2));
-    return _blogPosts;
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('blogPosts').get();
+      return querySnapshot.docs.map((doc) {
+        return BlogPost.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+    } catch (e) {
+      print("Error getting blog posts: $e");
+      return [];
+    }
   }
 
-  void addBlogPost(BlogPost blogPost) {
-    _blogPosts.add(blogPost);
+  // Methode zum hinzufügen von Blogs
+  Future<void> addBlogPost(BlogPost blogPost) async {
+    try {
+      await _firestore.collection('blogPosts').add(blogPost.toMap());
+    } catch (e) {
+      print("Error adding blog post: $e");
+    }
+  }
+
+  // Methode zum Löschen von Blogs
+  Future<void> deleteBlogPost(String blogPostId) async {
+    try {
+      await _firestore.collection('blogPosts').doc(blogPostId).delete();
+    } catch (e) {
+      print("Error deleting blog post: $e");
+    }
   }
 }
