@@ -70,32 +70,36 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
   }
 
   // Methode um die Blogs in der Datenbank zu speichern
-  Future<void> addBlogPost() async {
-    final db = FirebaseFirestore.instance.collection('blogPosts');
-    final currentUser = FirebaseAuth.instance.currentUser;
+Future<void> addBlogPost() async {
+  final db = FirebaseFirestore.instance.collection('blogPosts');
+  final currentUser = FirebaseAuth.instance.currentUser;
 
-    if (currentUser == null) {
-      // Schutz, falls der User nicht angemeldet ist
-      return;
-    }
-
-    // Neues Blog-Objekt erstellen 
-    final blog = BlogPost(
-      id: DateTime.now().toString(),
-      author: currentUser.uid,
-      title: _title,
-      text: _text,
-      date: DateTime.now(),
-    );
-
-    // erstellter Blog in Firebase speichern
-    try {
-      await db.doc(blog.id).set(blog.toMap());
-    } on FirebaseException catch (e) {
-      // Handle Firebase exception
-      print("Error adding blog post: ${e.message}");
-    }
+  if (currentUser == null) {
+    // Schutz, falls der User nicht angemeldet ist
+    return;
   }
+
+  // Der Benutzer muss abgerufen werden
+  DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
+  String authorName = userDoc['authorName'];
+
+  // Neues Blog-Objekt erstellen 
+  final blog = BlogPost(
+    id: DateTime.now().toString(),
+    author: authorName,
+    title: _title,
+    text: _text,
+    date: DateTime.now(),
+  );
+
+  // erstellter Blog in Firebase speichern
+  try {
+    await db.doc(blog.id).set(blog.toMap());
+  } on FirebaseException catch (e) {
+    // Handle Firebase exception
+    print("Error adding blog post: ${e.message}");
+  }
+}
 
   // Überprüfen, ob der Benutzer ein Gast ist
   bool _isGuestUser() {
