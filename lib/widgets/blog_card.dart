@@ -3,6 +3,7 @@ import '../screens/blog_detail_screen.dart';
 import 'package:intl/intl.dart';
 
 class BlogCard extends StatelessWidget {
+  final String id;
   final String author;
   final String title;
   final DateTime date;
@@ -10,6 +11,7 @@ class BlogCard extends StatelessWidget {
 
   const BlogCard({
     super.key,
+    required this.id,
     required this.author,
     required this.title,
     required this.date,
@@ -27,6 +29,7 @@ class BlogCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => BlogDetailScreen(
+              id: id,
               title: title,
               author: author,
               date: formattedDate,

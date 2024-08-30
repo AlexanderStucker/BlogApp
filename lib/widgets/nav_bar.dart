@@ -72,12 +72,14 @@ class NavBar extends StatelessWidget {
           NavListTile(
             icon: Icons.add_box_outlined,
             title: "Write new Blog",
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              Navigator.pushNamed(
-                 context, '/create',);
+              final result = await Navigator.pushNamed(context, '/create');
+              if (result == true) {
+                onNewBlogCreated();
               }
-              ),
+            },
+          ),
           const Divider(),
           Expanded( 
             child: Container(),

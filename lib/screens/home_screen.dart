@@ -90,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final blog = snapshot.data![index];
                         return BlogCard(
+                          id : blog.id,
                           author: blog.author,
                           title: blog.title,
                           date: blog.date,

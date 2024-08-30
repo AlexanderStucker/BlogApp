@@ -34,5 +34,12 @@ class BlogRepository {
     }
   }
 
-  // Methode zum Löschen von Blogs ////TBD///
+  // Methode zum Löschen von Blogs
+  Future<void> deleteBlogPost(String blogPostId) async {
+    try {
+      await _firestore.collection('blogPosts').doc(blogPostId).delete();
+    } catch (e) {
+      print("Error deleting blog post: $e");
+    }
+  }
 }

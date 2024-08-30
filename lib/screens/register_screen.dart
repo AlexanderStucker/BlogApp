@@ -1,39 +1,43 @@
 import 'package:blog_app/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:blog_app/screens/register_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _authorNameController = TextEditingController();
 
-  void _loginWithEmailAndPassword() async {
+  void _registerWithEmailAndPassword() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
+    String authorName = _authorNameController.text.trim(); // Autor-Name abrufen
 
     try {
-      await AuthService().signInWithEmailAndPassword(email, password);
+      // Registrierung durchführen und Benutzer erstellen
+      await AuthService().registerWithEmailAndPassword(email, password, authorName);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login erfolgreich!')),
+        const SnackBar(content: Text('Registrierung erfolgreich!')),
       );
+      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fehler beim Login: $e')),
+        SnackBar(content: Text('Fehler bei der Registrierung: $e')),
       );
     }
   }
 
-  void _navigateToRegistrationScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const RegistrationScreen()),
-    );
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _authorNameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,11 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Login',
-          style: TextStyle(color: Colors.black),
+          'Registrierung',
+          style: TextStyle(color: Colors.black), 
         ),
         backgroundColor: Colors.white, 
-        elevation: 0,
+        elevation: 0, 
         iconTheme: const IconThemeData(color: Colors.black), 
       ),
       body: Container(
@@ -57,6 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),
+                _buildTextField(
+                  controller: _authorNameController, 
+                  labelText: 'Author Name',
+                  icon: Icons.person,
+                ),
+                const SizedBox(height: 20),
                 _buildTextField(
                   controller: _emailController,
                   labelText: 'Email',
@@ -70,25 +80,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 40),
-                _buildLoginButton(
-                  text: 'Login with Email and Password',
-                  color: Colors.blue.shade600,
-                  onPressed: _loginWithEmailAndPassword,
-                ),
-                const SizedBox(height: 20),
-                _buildLoginButton(
-                  text: 'Login as Guest',
-                  color: const Color.fromARGB(255, 13, 54, 90),
-                  onPressed: AuthService().anonymousLogin,
-                  icon: Icons.login,
-                ),
-                const SizedBox(height: 20),
-                TextButton(
-                  onPressed: _navigateToRegistrationScreen,
-                  child: const Text(
-                    'Account Erstellen',
-                    style: TextStyle(color: Colors.blue),
-                  ),
+                _buildRegisterButton(
+                  text: 'Register with Email and Password',
+                  color: Colors.green.shade600, 
+                  onPressed: _registerWithEmailAndPassword,
                 ),
               ],
             ),
@@ -107,9 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.blue),
+        prefixIcon: Icon(icon, color: Colors.blue), 
         labelText: labelText,
-        labelStyle: TextStyle(color: Colors.grey.shade800),
+        labelStyle: TextStyle(color: Colors.grey.shade800), 
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
@@ -120,13 +115,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLoginButton({
+  Widget _buildRegisterButton({
     required String text,
     required Color color,
     required VoidCallback onPressed,
-    IconData? icon,
   }) {
-    return ElevatedButton.icon(
+    return ElevatedButton(
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(20),
         backgroundColor: color,
@@ -136,10 +130,9 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 5,
       ),
       onPressed: onPressed,
-      icon: icon != null ? Icon(icon, color: Colors.white) : null,
-      label: Text(
+      child: Text(
         text,
-        style: const TextStyle(fontSize: 18, color: Colors.white),
+        style: const TextStyle(fontSize: 18, color: Colors.white), 
       ),
     );
   }
