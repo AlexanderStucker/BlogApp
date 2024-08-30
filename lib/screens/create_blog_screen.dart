@@ -12,7 +12,6 @@ class CreateBlogScreen extends StatefulWidget {
   _CreateBlogScreenState createState() => _CreateBlogScreenState();
 }
 
-// Titel, Author und Text müssen gespeichert werden
 class _CreateBlogScreenState extends State<CreateBlogScreen> {
   String _title = '';
   String _author = '';
@@ -54,9 +53,13 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                await addBlogPost();
-                widget.onBlogCreated();
-                Navigator.pop(context, true); // Pass true when a blog is created
+                if (_isGuestUser()) {
+                  _showGuestAlert();
+                } else {
+                  await addBlogPost();
+                  widget.onBlogCreated();
+                  Navigator.pop(context, true); // Pass true when a blog is created
+                }
               },
               child: const Text('Create Blog'),
             ),
@@ -66,7 +69,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
     );
   }
 
-// Methode um die Blogs in der Datenbank zu speichern
+  // Methode um die Blogs in der Datenbank zu speichern
   Future<void> addBlogPost() async {
     final db = FirebaseFirestore.instance.collection('blogPosts');
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -92,5 +95,32 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
       // Handle Firebase exception
       print("Error adding blog post: ${e.message}");
     }
+  }
+
+  // Überprüfen, ob der Benutzer ein Gast ist
+  bool _isGuestUser() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    return currentUser != null && currentUser.isAnonymous;
+  }
+
+  // Zeige eine Warnung an Gäste
+  void _showGuestAlert() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Guest User'),
+          content: const Text('Only registered users can create blogs. Please sign up or log in to continue.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

@@ -2,12 +2,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
-  final userStream = FirebaseAuth.instance.authStateChanges();
-  final user = FirebaseAuth.instance.currentUser;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Stream für Auth-Status-Änderungen
+  Stream<User?> get userStream => _auth.authStateChanges();
+
+  // Gibt den aktuellen Benutzer zurück
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
+  // Registriert einen neuen Benutzer mit Email und Passwort
   Future<User?> registerWithEmailAndPassword(String email, String password, String authorName) async {
     try {
-      UserCredential result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       
       User? user = result.user;
@@ -25,17 +33,19 @@ class AuthService {
     }
   }
 
+  // Guest Anmeldung
   Future<void> anonymousLogin() async {
     try {
-      await FirebaseAuth.instance.signInAnonymously();
+      await _auth.signInAnonymously();
     } on FirebaseAuthException catch (e) {
-      // Fehlerbehandlung hier
+      throw Exception('Anonymous login failed: ${e.message}');
     }
   }
 
+  // Anmeldung mit Email und Passwort
   Future<User?> signInWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential result = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       return result.user;
     } catch (e) {
@@ -43,7 +53,14 @@ class AuthService {
     }
   }
 
+  // Abmeldung
   Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await _auth.signOut();
+  }
+
+  // Überprüfung ob der user Anonym = Guest ist
+  bool isAnonymousUser() {
+    final user = getCurrentUser();
+    return user != null && user.isAnonymous;
   }
 }

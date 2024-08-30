@@ -74,9 +74,14 @@ class NavBar extends StatelessWidget {
             title: "Write new Blog",
             onTap: () async {
               Navigator.pop(context);
-              final result = await Navigator.pushNamed(context, '/create');
-              if (result == true) {
-                onNewBlogCreated();
+              // Prüfen ob der User als Guest eingeloggt ist
+              if (_isGuestUser()) {
+                _showGuestAlert(context);
+              } else {
+                final result = await Navigator.pushNamed(context, '/create');
+                if (result == true) {
+                  onNewBlogCreated();
+                }
               }
             },
           ),
@@ -97,6 +102,31 @@ class NavBar extends StatelessWidget {
       ),
     );
   }
+
+
+//Guest Logic
+  bool _isGuestUser() {
+    final currentUser = AuthService().getCurrentUser();
+    return currentUser != null && currentUser.isAnonymous;
+  }
+
+  void _showGuestAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Guest'),
+          content: const Text('Guests can not create a Blog. Please create a account with your e-mail'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
-
-
