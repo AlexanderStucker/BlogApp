@@ -15,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<List<BlogPost>>? futureBlogs;
+  List<BlogPost>? allBlogs; 
+  List<BlogPost>? filteredBlogs;  
 
   @override
   void initState() {
@@ -24,8 +26,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Hohlt die Blogs aus dem Repo
   Future<void> fetchBlogs() async {
+    List<BlogPost> blogs = await BlogRepository().getBlogPosts();
     setState(() {
-      futureBlogs = BlogRepository().getBlogPosts();  // BlogPosts werden aus dem Repository abgerufen.
+      allBlogs = blogs;
+      filteredBlogs = blogs;  
+    });
+  }
+
+  // Das Such-Queary in die filteredBlog-List speichern
+  void filterBlogs(String query) {
+    List<BlogPost>? filtered = allBlogs?.where((blog) {
+      final titleLower = blog.title.toLowerCase();
+      final authorLower = blog.author.toLowerCase();
+      final searchLower = query.toLowerCase();
+      return titleLower.contains(searchLower) || authorLower.contains(searchLower);
+    }).toList();
+
+    setState(() {
+      filteredBlogs = filtered;
     });
   }
 
@@ -62,45 +80,34 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           TitleText(title: "Blog List"),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 10),
-            child: searchBox(),  // Suchfeld zur Filterung der Blogs.
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: SearchBox(onSearch: filterBlogs), 
           ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: fetchBlogs,  // Damit die Liste aktuallisiert werden kann
-              child: FutureBuilder<List<BlogPost>>(
-                future: futureBlogs,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
+              child: filteredBlogs == null 
+                  ? const Center(
                       child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text('No blogs found'),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        final blog = snapshot.data![index];
-                        return BlogCard(
-                          id : blog.id,
-                          author: blog.author,
-                          title: blog.title,
-                          date: blog.date,
-                          text: blog.text,
-                        );
-                      },
-                    );
-                  }
-                },
-              ),
+                    )
+                  : filteredBlogs!.isEmpty
+                      ? const Center(
+                          child: Text('No blogs found'),
+                        )
+                      : ListView.builder(
+                          itemCount: filteredBlogs!.length,
+                          itemBuilder: (context, index) {
+                            final blog = filteredBlogs![index];
+                            return BlogCard(
+                              id: blog.id,
+                              author: blog.author,
+                              title: blog.title,
+                              date: blog.date,
+                              text: blog.text,
+                            );
+                          },
+                        ),
             ),
           ),
         ],
