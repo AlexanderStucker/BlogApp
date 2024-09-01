@@ -86,6 +86,7 @@ Future<void> addBlogPost() async {
   // Neues Blog-Objekt erstellen 
   final blog = BlogPost(
     id: DateTime.now().toString(),
+    userUID: currentUser.uid,
     author: authorName,
     title: _title,
     text: _text,
