@@ -105,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               title: blog.title,
                               date: blog.date,
                               text: blog.text,
+                              onBlogDeleted: fetchBlogs,
                             );
                           },
                         ),

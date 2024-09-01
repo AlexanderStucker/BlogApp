@@ -8,6 +8,7 @@ class BlogCard extends StatelessWidget {
   final String title;
   final DateTime date;
   final String text;
+  final VoidCallback onBlogDeleted;
 
   const BlogCard({
     super.key,
@@ -16,6 +17,7 @@ class BlogCard extends StatelessWidget {
     required this.title,
     required this.date,
     required this.text,
+    required this.onBlogDeleted,
   });
 
   @override
@@ -24,8 +26,8 @@ class BlogCard extends StatelessWidget {
     String formattedDate = DateFormat('dd.MM.yyyy').format(date);
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => BlogDetailScreen(
@@ -37,6 +39,9 @@ class BlogCard extends StatelessWidget {
             ),
           ),
         );
+        if (result == true) {
+          onBlogDeleted();
+        }
       },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
