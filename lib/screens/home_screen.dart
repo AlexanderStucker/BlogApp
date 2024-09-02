@@ -53,29 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: NavBar(
         onNewBlogCreated: fetchBlogs,
       ),
-      appBar: AppBar(
-        iconTheme: const IconThemeData(
-          size: 50,
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            ClipOval(
-              child: Image.network(
-                "https://images.unsplash.com/photo-1545996124-0501ebae84d0?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                height: 40,
-                width: 40,
-                fit: BoxFit.cover,
-                // Fehlerbehandlung beim Laden des Bildes.
-                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return CircularProgressIndicator();
-                },
-              ),
-            ),
-          ],
-        ),
+       appBar: AppBar(
+         iconTheme: const IconThemeData(
+           size: 50,
+         ),
       ),
       body: Column(
         children: [

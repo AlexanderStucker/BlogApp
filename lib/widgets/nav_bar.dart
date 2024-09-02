@@ -13,8 +13,8 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
-  String _authorName = 'Author Name';
-  String _email = 'Email';
+  String _authorName = 'Guest';
+  String _email = '';
 
   // Benutzerdaten laden
   @override
@@ -59,12 +59,6 @@ class _NavBarState extends State<NavBar> {
                   CircleAvatar(
                     radius: 45,
                     child: ClipOval(
-                      child: Image.network(
-                        "https://images.unsplash.com/photo-1545996124-0501ebae84d0?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                        width: 90,
-                        height: 90,
-                        fit: BoxFit.cover,
-                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
