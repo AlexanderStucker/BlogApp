@@ -27,13 +27,7 @@ class BlogDetailScreen extends StatelessWidget {
           icon: const Icon(Icons.delete),
           onPressed: () async {
             bool confirmed = await _showDeleteConfirmationDialog(context);
-            if (confirmed) {
-              await BlogRepository().deleteBlogPost(id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Blog erfolgreich gelöscht!')),
-              );
-              Navigator.pop(context, true);  // Gibt `true` zurück, wenn ein Blog gelöscht wurde
-            }
+            Navigator.pop(context, true);  // Gibt `true` zurück, wenn ein Blog gelöscht wurde
           },
         ),
         ],
@@ -63,17 +57,17 @@ class BlogDetailScreen extends StatelessWidget {
     return await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Blog löschen'),
-        content: const Text('Möchten Sie diesen Blog wirklich löschen?'),
+        title: const Text('Delete Blog'),
+        content: const Text('Do you want to delete the Blog?'),
         actions: [
           TextButton(
-            child: const Text('Abbrechen'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
           ),
           TextButton(
-            child: const Text('Löschen'),
+            child: const Text('Delete'),
             onPressed: () {
               Navigator.of(context).pop(true);
             },

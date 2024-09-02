@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextButton(
                   onPressed: _navigateToRegistrationScreen,
                   child: const Text(
-                    'Account Erstellen',
+                    'Create Account',
                     style: TextStyle(color: Colors.blue),
                   ),
                 ),
