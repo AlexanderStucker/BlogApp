@@ -20,6 +20,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.10.0
 
 flutter:
   uses-material-design: true
+
+flutter_icons:
+  android: true
+  image_path: "lib/assets/icon/android_icon.png"
