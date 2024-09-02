@@ -27,7 +27,10 @@ class BlogDetailScreen extends StatelessWidget {
           icon: const Icon(Icons.delete),
           onPressed: () async {
             bool confirmed = await _showDeleteConfirmationDialog(context);
-            Navigator.pop(context, true);  // Gibt `true` zurück, wenn ein Blog gelöscht wurde
+            if (confirmed) {
+              await BlogRepository().deleteBlogPost(id);
+              Navigator.pop(context, true);  // Gibt `true` zurück, wenn ein Blog gelöscht wurde
+            }
           },
         ),
         ],
