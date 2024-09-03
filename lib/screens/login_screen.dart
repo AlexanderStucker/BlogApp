@@ -20,11 +20,11 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await AuthService().signInWithEmailAndPassword(email, password);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login erfolgreich!')),
+        const SnackBar(content: Text('Login successful!')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fehler beim Login: $e')),
+        SnackBar(content: Text('Error: $e')),
       );
     }
   }

@@ -18,16 +18,23 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     String password = _passwordController.text.trim();
     String authorName = _authorNameController.text.trim(); // Autor-Name abrufen
 
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('The Password needs to be at least 6 characters long')),
+      );
+      return;
+    }
+
     try {
       // Registrierung durchführen und Benutzer erstellen
       await AuthService().registerWithEmailAndPassword(email, password, authorName);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registrierung erfolgreich!')),
+        const SnackBar(content: Text('Registration successful!')),
       );
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fehler bei der Registrierung: $e')),
+        SnackBar(content: Text('Error: $e')),
       );
     }
   }
@@ -45,7 +52,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Registrierung',
+          'Registration',
           style: TextStyle(color: Colors.black), 
         ),
         backgroundColor: Colors.white, 
