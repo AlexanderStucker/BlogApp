@@ -23,34 +23,43 @@ class BlogDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
         actions: [
-        IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () async {
-            bool confirmed = await _showDeleteConfirmationDialog(context);
-            if (confirmed) {
-              await BlogRepository().deleteBlogPost(id);
-              Navigator.pop(context, true);  // Gibt `true` zurück, wenn ein Blog gelöscht wurde
-            }
-          },
-        ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () async {
+              bool confirmed = await _showDeleteConfirmationDialog(context);
+              if (confirmed) {
+                await BlogRepository().deleteBlogPost(id);
+                Navigator.pop(context, true);  // Gibt `true` zurück, wenn ein Blog gelöscht wurde
+              }
+            },
+          ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              title,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('By $author'),
-            const SizedBox(height: 8),
-            Text(date),
-            const SizedBox(height: 16),
-            Text(text),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Image.network(
+                'https://picsum.photos/200/300?random=$id',
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text('By $author'),
+              const SizedBox(height: 8),
+              Text(date),
+              const SizedBox(height: 16),
+              Text(text),
+            ],
+          ),
         ),
       ),
     );
