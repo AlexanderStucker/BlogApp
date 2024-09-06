@@ -58,7 +58,7 @@ Um das Projekt lokal auszuführen, müssen die folgenden Schritte befolgt werden
     ```sh
     flutter pub get
     ```
-4. 4. Firebase konfigurieren (Meine json-Datei ist im Repo vorhanden):
+4. - Firebase konfigurieren (Meine json-Datei ist im Repo vorhanden):
    - Erstelle ein Firebase-Projekt.
    - Füge die `google-services.json` für Android hinzu.
 
